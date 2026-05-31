@@ -110,22 +110,12 @@
         }
       }
 
-      &--readonly,
-      &--disabled {
+      &--readonly {
         background: var(--ExcTextField--readonly--background);
         border-color: var(--ExcTextField--readonly--border);
 
         & input {
           color: var(--ExcTextField--readonly--color);
-        }
-      }
-
-      &--disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-
-        & input {
-          cursor: not-allowed;
         }
       }
     }

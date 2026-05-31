@@ -20,7 +20,6 @@ type TextFieldProps = {
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
 
   readonly?: boolean;
-  disabled?: boolean;
   fullWidth?: boolean;
   selectOnRender?: boolean;
 
@@ -40,7 +39,6 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       fullWidth,
       placeholder,
       readonly,
-      disabled,
       selectOnRender,
       onKeyDown,
       isRedacted = false,
@@ -71,12 +69,9 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         className={clsx("ExcTextField", className, {
           "ExcTextField--fullWidth": fullWidth,
           "ExcTextField--hasIcon": !!icon,
-          "ExcTextField--disabled": disabled,
         })}
         onClick={() => {
-          if (!disabled) {
-            innerRef.current?.focus();
-          }
+          innerRef.current?.focus();
         }}
       >
         {icon}
@@ -84,7 +79,6 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         <div
           className={clsx("ExcTextField__input", {
             "ExcTextField__input--readonly": readonly,
-            "ExcTextField__input--disabled": disabled,
           })}
         >
           <input
@@ -96,7 +90,6 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
                 !isTemporarilyUnredacted,
             })}
             readOnly={readonly}
-            disabled={disabled}
             value={"value" in rest ? rest.value : undefined}
             defaultValue={
               "defaultValue" in rest ? rest.defaultValue : undefined

@@ -1,21 +1,28 @@
 import { trackEvent } from "@excalidraw/excalidraw/analytics";
+import { copyTextToSystemClipboard } from "@excalidraw/excalidraw/clipboard";
 import { Dialog } from "@excalidraw/excalidraw/components/Dialog";
 import { FilledButton } from "@excalidraw/excalidraw/components/FilledButton";
 import { TextField } from "@excalidraw/excalidraw/components/TextField";
 import {
+  copyIcon,
   LinkIcon,
   playerPlayIcon,
   playerStopFilledIcon,
+  share,
+  shareIOS,
+  shareWindows,
 } from "@excalidraw/excalidraw/components/icons";
 import { useUIAppState } from "@excalidraw/excalidraw/context/ui-appState";
+import { useCopyStatus } from "@excalidraw/excalidraw/hooks/useCopiedIndicator";
 import { useI18n } from "@excalidraw/excalidraw/i18n";
 import { KEYS, getFrame } from "@excalidraw/common";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { atom, useAtom, useAtomValue } from "../app-jotai";
 import { activeRoomLinkAtom } from "../collab/Collab";
 
 import "./ShareDialog.scss";
+// import { QRCode } from "./QRCode";
 
 import type { CollabAPI } from "../collab/Collab";
 
@@ -25,6 +32,20 @@ type ShareDialogType = "share" | "collaborationOnly";
 export const shareDialogStateAtom = atom<
   { isOpen: false } | { isOpen: true; type: ShareDialogType }
 >({ isOpen: false });
+
+const getShareIcon = () => {
+  const navigator = window.navigator as any;
+  const isAppleBrowser = /Apple/.test(navigator.vendor);
+  const isWindowsBrowser = navigator.appVersion.indexOf("Win") !== -1;
+
+  if (isAppleBrowser) {
+    return shareIOS;
+  } else if (isWindowsBrowser) {
+    return shareWindows;
+  }
+
+  return share;
+};
 
 export type ShareDialogProps = {
   collabAPI: CollabAPI | null;
@@ -43,6 +64,43 @@ const ActiveRoomDialog = ({
   handleClose: () => void;
 }) => {
   const { t } = useI18n();
+  const [, setJustCopied] = useState(false);
+  const timerRef = useRef<number>(0);
+  const ref = useRef<HTMLInputElement>(null);
+  const isShareSupported = "share" in navigator;
+  const { onCopy, copyStatus } = useCopyStatus();
+
+  const copyRoomLink = async () => {
+    try {
+      await copyTextToSystemClipboard(activeRoomLink);
+    } catch (e) {
+      collabAPI.setCollabError(t("errors.copyToSystemClipboardFailed"));
+    }
+
+    setJustCopied(true);
+
+    if (timerRef.current) {
+      window.clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = window.setTimeout(() => {
+      setJustCopied(false);
+    }, 3000);
+
+    ref.current?.select();
+  };
+
+  const shareRoomLink = async () => {
+    try {
+      await navigator.share({
+        title: t("roomDialog.shareTitle"),
+        text: t("roomDialog.shareTitle"),
+        url: activeRoomLink,
+      });
+    } catch (error: any) {
+      // Just ignore.
+    }
+  };
 
   return (
     <>
@@ -53,10 +111,34 @@ const ActiveRoomDialog = ({
         defaultValue={collabAPI.getUsername()}
         placeholder="Your name"
         label="Your name"
-        disabled
+        readonly
         onChange={collabAPI.setUsername}
         onKeyDown={(event) => event.key === KEYS.ENTER && handleClose()}
       />
+      <div className="ShareDialog__active__linkRow">
+        {isShareSupported && (
+          <FilledButton
+            size="large"
+            variant="icon"
+            label="Share"
+            icon={getShareIcon()}
+            className="ShareDialog__active__share"
+            onClick={shareRoomLink}
+          />
+        )}
+        <FilledButton
+          size="large"
+          label={t("buttons.copyLink")}
+          icon={copyIcon}
+          status={copyStatus}
+          fullWidth
+          onClick={() => {
+            copyRoomLink();
+            onCopy();
+          }}
+        />
+      </div>
+      {/* <QRCode value={activeRoomLink} /> */}
       <div className="ShareDialog__active__description">
         <p>
           <span
