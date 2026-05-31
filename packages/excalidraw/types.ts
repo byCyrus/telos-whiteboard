@@ -770,6 +770,8 @@ export type UIOptions = Partial<{
   ) => EditorInterface["formFactor"];
   /** @deprecated does nothing. Will be removed in 0.15 */
   welcomeScreen?: boolean;
+  /** Hide the default right sidebar (library/search) and its toggle button */
+  disableRightSidebar?: boolean;
 }>;
 
 export type AppProps = Merge<

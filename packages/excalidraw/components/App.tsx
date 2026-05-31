@@ -3412,9 +3412,7 @@ class App extends React.Component<AppProps, AppState> {
       this.setState({ exportWithDarkMode: shouldExportWithDarkMode });
     }
 
-    if (!this.state.showWelcomeScreen && !elements.length) {
-      this.setState({ showWelcomeScreen: true });
-    }
+    // Welcome screen disabled (Telos Whiteboard)
 
     const hasFollowedPersonLeft =
       prevState.userToFollow &&

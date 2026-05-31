@@ -34,10 +34,10 @@ import {
   FILE_UPLOAD_MAX_BYTES,
   ROOM_ID_BYTES,
 } from "../app_constants";
+import { getCollaborationHash } from "../telos/hashUsername";
 
 import { encodeFilesForUpload } from "./FileManager";
 import { saveFilesToFirebase } from "./firebase";
-import { getCollaborationHash } from "../telos/hashUsername";
 
 import type { WS_SUBTYPES } from "../app_constants";
 

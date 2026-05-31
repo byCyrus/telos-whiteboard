@@ -12,10 +12,7 @@ export const stripHashParams = (
 ): string => {
   let result = hash;
   for (const paramName of paramNames) {
-    result = result.replace(
-      new RegExp(`[&?]${paramName}=[^&]*`, "gi"),
-      "",
-    );
+    result = result.replace(new RegExp(`[&?]${paramName}=[^&]*`, "gi"), "");
   }
   return result;
 };
