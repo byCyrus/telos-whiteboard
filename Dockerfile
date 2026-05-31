@@ -13,11 +13,15 @@ COPY tsconfig.json ./
 COPY .env.production ./
 
 # Collaboration WebSocket server (set in Coolify build args / env)
-ARG VITE_APP_WS_SERVER_URL=https://collab.yourdomain.com
+ARG VITE_APP_WS_SERVER_URL=https://collab-draw.coolhost.site
 ENV VITE_APP_WS_SERVER_URL=${VITE_APP_WS_SERVER_URL}
 
+# --- DÜZENLENEN KISIM BURASI ---
+# NODE_OPTIONS ekleyerek RAM kullanımını 1536MB (1.5GB) ile sınırlandırıyoruz. 
+# Bu sayede sunucunun geri kalan işlemleri (Coolify, Nginx vb.) için nefes alacak alan kalır.
 RUN yarn install --frozen-lockfile --network-timeout 600000 \
-  && yarn --cwd excalidraw-app build:app:docker
+  && NODE_OPTIONS="--max-old-space-size=1536" yarn --cwd excalidraw-app build:app:docker
+# ------------------------------
 
 FROM nginx:stable-alpine AS runner
 
