@@ -37,4 +37,4 @@ jobs:
           # Burada artık OWNER_LC (küçük harf olan) değişkenini kullanıyoruz
           tags: ghcr.io/${{ env.OWNER_LC }}/telos-whiteboard:latest
           build-args: |
-            VITE_APP_WS_SERVER_URL=https://collab-draw.coolhost.site
+            VITE_APP_WS_SERVER_URL=wss://collab-draw.coolhost.site
