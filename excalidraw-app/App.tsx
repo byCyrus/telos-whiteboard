@@ -321,8 +321,10 @@ const initializeScene = async (opts: {
     const { excalidrawAPI } = opts;
 
     const hashUsername = parseUsernameFromHash();
-    if (hashUsername) {
-      opts.collabAPI.setUsername(hashUsername);
+    const usernameFromUrl = (window as any).usernameFromUrl || new URLSearchParams(window.location.search).get("username");
+    const finalUsername = usernameFromUrl || hashUsername;
+    if (finalUsername) {
+      opts.collabAPI.setUsername(finalUsername);
     }
 
     const scene = await opts.collabAPI.startCollaboration(roomLinkData);
@@ -515,8 +517,10 @@ const ExcalidrawWrapper = () => {
 
   useEffect(() => {
     const hashUsername = parseUsernameFromHash();
-    if (hashUsername && collabAPI) {
-      collabAPI.setUsername(hashUsername);
+    const usernameFromUrl = (window as any).usernameFromUrl || new URLSearchParams(window.location.search).get("username");
+    const finalUsername = usernameFromUrl || hashUsername;
+    if (finalUsername && collabAPI) {
+      collabAPI.setUsername(finalUsername);
     }
   }, [collabAPI]);
 
